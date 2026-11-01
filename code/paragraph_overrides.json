@@ -1,0 +1,84 @@
+{
+ "_about": [
+  "Station-check decisions read by code/05_write_paragraphs.py, in the form of the STATION_CHECK and",
+  "CONFIRMED tables of the original writer (archive/klara_c40_metrics_2026-10-31/code/06_write_paragraphs.py,",
+  "October 2026 station check, notebook Section 39). Keys are \"City|SEASON|variable\".",
+  "kind: none (no trend is quoted: 'show no clear long-term trend' / 'no clear long-term trend in station records'),",
+  "uncertain (humidity: 'may have risen, but station records do not confirm it'), value (humidity: the station",
+  "rate in 'value' is quoted instead of ERA5's), slight_decline (rainfall: 'declined slightly, though station",
+  "records do not show the decline clearly'), unverified (rainfall: the ERA5 trend is quoted with 'a trend that",
+  "station records cannot yet confirm' when p < 0.05; wet_day_share entries are recorded but no sentence reads them).",
+  "A humidity entry of kind none or uncertain also drops the humidity outlook clause; a rainfall entry of kind",
+  "unverified or slight_decline adds 'partly because of an uncertain long-term drying trend' to a drier outlook.",
+  "text replaces the generated trend sentence outright. note is the reviewer note written under the paragraph.",
+  "The 'shared' block applies under every rule set; 'legacy' and 'new' add to or replace it for that set.",
+  "confirmed lists humidity trends that weather stations confirm ('a change weather-station records confirm')."
+ ],
+ "station_check": {
+  "shared": {
+   "Ahmedabad|DJF|rel_humidity": {
+    "kind": "none",
+    "note": "Station records (Ahmedabad airport) show no humidity trend; ERA5's rise is not used."
+   },
+   "Ahmedabad|MAM|rel_humidity": {
+    "kind": "none",
+    "note": "Station records show no rise in spring humidity; ERA5's rise is not used."
+   },
+   "Dhaka|DJF|rel_humidity": {
+    "kind": "uncertain",
+    "note": "The station record (1997–2025) shows no trend; ERA5's rise is treated as uncertain."
+   },
+   "Beijing|MAM|rel_humidity": {
+    "kind": "value",
+    "value": -1.0,
+    "note": "Station records confirm the decline but at about 1 point per decade, smaller than ERA5."
+   },
+   "Vancouver|DJF|precipitation": {
+    "kind": "slight_decline",
+    "note": "The Vancouver Harbour station shows only a slight, uncertain decline (about −2% per decade), not ERA5's −10%."
+   },
+   "Freetown|DJF|precipitation": {
+    "kind": "unverified",
+    "note": "No usable station record; ERA5's dry-season rainfall trend is unverified."
+   },
+   "Lagos|DJF|precipitation": {
+    "kind": "unverified",
+    "note": "No usable station record; ERA5's dry-season rainfall trend is unverified."
+   },
+   "Lagos|DJF|wet_day_share": {
+    "kind": "unverified",
+    "note": "No usable station record."
+   },
+   "Accra|DJF|precipitation": {
+    "kind": "unverified",
+    "note": "No usable station record; ERA5's dry-season rainfall trend is unverified."
+   },
+   "Accra|DJF|wet_day_share": {
+    "kind": "unverified",
+    "note": "No usable station record."
+   },
+   "Santiago|MAM|temperature": {
+    "kind": "none",
+    "note": "ERA5 shows slight cooling that no usable station record can confirm; inland Santiago would normally be expected to warm."
+   }
+  },
+  "legacy": {},
+  "new": {
+   "Santiago|MAM|temperature": {
+    "kind": "none",
+    "text": "Mar–May temperatures in Santiago have cooled by about 0.1 °C per decade in ERA5, a trend that no usable station record can confirm.",
+    "note": "ERA5 shows slight cooling that no usable station record can confirm; inland Santiago would normally be expected to warm. The new rules say so in the paragraph."
+   },
+   "Dhaka|MAM|rel_humidity": {
+    "kind": "uncertain",
+    "note": "As in Dec–Feb: the station record (1997–2025) shows no trend; ERA5's rise is treated as uncertain."
+   }
+  }
+ },
+ "confirmed": [
+  "Delhi|DJF|rel_humidity",
+  "Delhi|MAM|rel_humidity",
+  "Hangzhou|MAM|rel_humidity",
+  "Shanghai|MAM|rel_humidity"
+ ]
+}

@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
+.claude/
+data/processed/daily_panel.parquet
+archive/klara_c40_metrics_2026-10-31/run_pipeline.ipynb

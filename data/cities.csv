@@ -1,0 +1,97 @@
+city,region,lat,lon,slug
+Abidjan,Africa,5.36,-4.01,abidjan
+Accra,Africa,5.6,-0.19,accra
+Addis Ababa,Africa,9.03,38.74,addis-ababa
+Cape Town,Africa,-33.92,18.42,cape-town
+Casablanca,Africa,33.57,-7.59,casablanca
+Dakar,Africa,14.72,-17.47,dakar
+Dar es Salaam,Africa,-6.79,39.21,dar-es-salaam
+Durban,Africa,-29.86,31.02,durban
+Ekurhuleni,Africa,-26.2,28.25,ekurhuleni
+Freetown,Africa,8.48,-13.23,freetown
+Johannesburg,Africa,-26.2,28.05,johannesburg
+Lagos,Africa,6.52,3.38,lagos
+Nairobi,Africa,-1.29,36.82,nairobi
+Tshwane,Africa,-25.75,28.19,tshwane
+Ahmedabad,South & West Asia,23.02,72.57,ahmedabad
+Amman,South & West Asia,31.95,35.93,amman
+Bengaluru,South & West Asia,12.97,77.59,bengaluru
+Chennai,South & West Asia,13.08,80.27,chennai
+Delhi,South & West Asia,28.61,77.21,delhi
+Dhaka,South & West Asia,23.81,90.41,dhaka
+Dubai,South & West Asia,25.2,55.27,dubai
+Istanbul,South & West Asia,41.01,28.98,istanbul
+Karachi,South & West Asia,24.86,67.01,karachi
+Mumbai,South & West Asia,19.08,72.88,mumbai
+Tel Aviv-Yafo,South & West Asia,32.09,34.78,tel-aviv-yafo
+Bangkok,Southeast Asia & Oceania,13.76,100.5,bangkok
+Hanoi,Southeast Asia & Oceania,21.03,105.85,hanoi
+Ho Chi Minh City,Southeast Asia & Oceania,10.82,106.63,ho-chi-minh-city
+Jakarta,Southeast Asia & Oceania,-6.21,106.85,jakarta
+Kuala Lumpur,Southeast Asia & Oceania,3.14,101.69,kuala-lumpur
+Quezon City,Southeast Asia & Oceania,14.68,121.04,quezon-city
+Singapore,Southeast Asia & Oceania,1.35,103.82,singapore
+Auckland,Southeast Asia & Oceania,-36.85,174.76,auckland
+Melbourne,Southeast Asia & Oceania,-37.81,144.96,melbourne
+Sydney,Southeast Asia & Oceania,-33.87,151.21,sydney
+Beijing,East Asia,39.9,116.41,beijing
+Chengdu,East Asia,30.57,104.07,chengdu
+Dalian,East Asia,38.91,121.61,dalian
+Fuzhou,East Asia,26.07,119.3,fuzhou
+Guangzhou,East Asia,23.13,113.26,guangzhou
+Hangzhou,East Asia,30.27,120.16,hangzhou
+Hong Kong,East Asia,22.32,114.17,hong-kong
+Nanjing,East Asia,32.06,118.8,nanjing
+Qingdao,East Asia,36.07,120.38,qingdao
+Seoul,East Asia,37.57,126.98,seoul
+Shanghai,East Asia,31.23,121.47,shanghai
+Shenzhen,East Asia,22.54,114.06,shenzhen
+Tokyo,East Asia,35.68,139.69,tokyo
+Wuhan,East Asia,30.59,114.31,wuhan
+Yokohama,East Asia,35.44,139.64,yokohama
+Zhenjiang,East Asia,32.19,119.43,zhenjiang
+Amsterdam,Europe,52.37,4.9,amsterdam
+Athens,Europe,37.98,23.73,athens
+Barcelona,Europe,41.39,2.17,barcelona
+Berlin,Europe,52.52,13.4,berlin
+Copenhagen,Europe,55.68,12.57,copenhagen
+Heidelberg,Europe,49.4,8.67,heidelberg
+Lisbon,Europe,38.72,-9.14,lisbon
+London,Europe,51.51,-0.13,london
+Madrid,Europe,40.42,-3.7,madrid
+Milan,Europe,45.46,9.19,milan
+Oslo,Europe,59.91,10.75,oslo
+Paris,Europe,48.86,2.35,paris
+Rome,Europe,41.9,12.5,rome
+Rotterdam,Europe,51.92,4.48,rotterdam
+Stockholm,Europe,59.33,18.07,stockholm
+Warsaw,Europe,52.23,21.01,warsaw
+Austin,North America,30.27,-97.74,austin
+Boston,North America,42.36,-71.06,boston
+Chicago,North America,41.88,-87.63,chicago
+Los Angeles,North America,34.05,-118.24,los-angeles
+Miami,North America,25.76,-80.19,miami
+Montréal,North America,45.5,-73.57,montreal
+New Orleans,North America,29.95,-90.07,new-orleans
+New York City,North America,40.71,-74.01,new-york-city
+Philadelphia,North America,39.95,-75.17,philadelphia
+Phoenix,North America,33.45,-112.07,phoenix
+Portland,North America,45.52,-122.68,portland
+San Francisco,North America,37.77,-122.42,san-francisco
+Seattle,North America,47.61,-122.33,seattle
+Toronto,North America,43.65,-79.38,toronto
+Vancouver,North America,49.28,-123.12,vancouver
+"Washington, DC",North America,38.91,-77.04,washington-dc
+Ciudad de México,Latin America,19.43,-99.13,ciudad-de-mexico
+Guadalajara,Latin America,20.67,-103.35,guadalajara
+Bogotá,Latin America,4.71,-74.07,bogota
+Medellín,Latin America,6.24,-75.58,medellin
+Quito,Latin America,-0.18,-78.47,quito
+Lima,Latin America,-12.05,-77.04,lima
+Santiago,Latin America,-33.45,-70.67,santiago
+Buenos Aires,Latin America,-34.6,-58.38,buenos-aires
+São Paulo,Latin America,-23.55,-46.63,sao-paulo
+Rio de Janeiro,Latin America,-22.91,-43.17,rio-de-janeiro
+Curitiba,Latin America,-25.43,-49.27,curitiba
+Salvador,Latin America,-12.97,-38.5,salvador
+Fortaleza,Latin America,-3.73,-38.52,fortaleza

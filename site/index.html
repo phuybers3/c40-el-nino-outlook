@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!--PAGE-->
+<title>C40 El Niño Outlook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a field bulletin. Sticky masthead, a statement and a full-width world map on the cover,
+   and city pages that read as a stack of instrument panels (one per variable). */
+:root {
+  --bg: #eef2f1;          /* sea-glass paper */
+  --panel: #f9fbfa;
+  --ink: #13242b;         /* deep teal ink */
+  --muted: #5a6a6f;
+  --rule: #c9d4d3;
+  --land: #dbe3e1;
+  --warm: #c4442b;        /* El Niño / warmer / above */
+  --warm-soft: #eab3a4;
+  --cool: #2c6aa0;        /* La Niña / cooler */
+  --cool-soft: #a9c6df;
+  --wet-soft: #a6d8da;
+  --dry-soft: #ecd3a3;
+  --dry: #a8742a;
+  --wet: #1f7f86;
+  --near: #c3cccb;
+  --q05: #7fa6b5; --q50: #3f6878; --q95: #13242b;
+  --focus: #2c6aa0;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e171b; --panel: #142127; --ink: #e2ebea; --muted: #93a5a8; --rule: #2a3b41; --land: #1d2d33;
+  --warm: #f07c5f; --warm-soft: #7a3a2c; --cool: #6ea8da; --cool-soft: #274a66; --dry: #d9a352; --wet: #4fb8bd; --wet-soft: #1f4d50; --dry-soft: #5a4520;
+  --near: #3a4c52; --q05: #5e8797; --q50: #9cc0cc; --q95: #e2ebea; --focus: #6ea8da; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0e171b; --panel: #142127; --ink: #e2ebea; --muted: #93a5a8; --rule: #2a3b41; --land: #1d2d33;
+  --warm: #f07c5f; --warm-soft: #7a3a2c; --cool: #6ea8da; --cool-soft: #274a66; --dry: #d9a352; --wet: #4fb8bd; --wet-soft: #1f4d50; --dry-soft: #5a4520;
+  --near: #3a4c52; --q05: #5e8797; --q50: #9cc0cc; --q95: #e2ebea; --focus: #6ea8da; color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 17px/1.55 var(--f-body); -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.wrap { max-width: 1280px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+.label { font: 600 11.5px/1.3 var(--f-display); text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); }
+.mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+
+/* masthead */
+.mast { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--rule); }
+.mast .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 12px; flex-wrap: wrap; }
+.brand { display: flex; align-items: baseline; gap: 10px; text-decoration: none; }
+.brand b { font: 700 19px/1 var(--f-display); letter-spacing: -0.02em; }
+.brand span { font: 400 12px/1 var(--f-mono); color: var(--muted); }
+.nav { display: flex; gap: 8px; }
+.btn { font: 600 14px/1 var(--f-display); padding: 9px 14px; border-radius: 999px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); text-decoration: none; cursor: pointer; }
+.btn:hover { border-color: var(--ink); }
+.btn[aria-current="page"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+.banner { background: var(--warm-soft); color: var(--ink); font: 500 13px/1.4 var(--f-display); }
+.banner .wrap { padding-block: 8px; }
+
+/* segmented season toggle */
+.seg { display: inline-flex; border: 1px solid var(--ink); border-radius: 999px; padding: 3px; gap: 3px; background: var(--panel); }
+.seg button { font: 600 16px/1 var(--f-display); border: 0; background: transparent; color: var(--ink); padding: 10px 17px; border-radius: 999px; cursor: pointer; }
+.seg button small { font-weight: 400; font-size: 13px; color: var(--muted); margin-left: 7px; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.seg button[aria-pressed="true"] small { color: var(--near); }
+
+/* cover */
+.hero { padding-block: 44px 28px; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 28px 48px; align-items: end; }
+.hero .head { grid-column: 1 / -1; }
+.hero h1 { font-size: clamp(32px, 5vw, 62px); line-height: 1.04; font-weight: 700; }
+.hero h1 em { font-style: normal; color: var(--warm); }
+.hero p { margin: 0; max-width: 64ch; font-size: 19.5px; line-height: 1.55; color: var(--ink); }
+.facts { display: grid; gap: 0; border-top: 2px solid var(--ink); }
+.facts div { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding-block: 10px; border-bottom: 1px solid var(--rule); align-items: baseline; }
+.facts .v { font: 500 20px/1 var(--f-mono); }
+.facts .k { font: 400 14px/1.35 var(--f-display); color: var(--muted); }
+
+.mapbox { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; }
+.maptools { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--rule); }
+.maptools h2 { font-size: 23px; font-weight: 600; }
+.maptools p { margin: 4px 0 0; font: 400 15.5px/1.45 var(--f-display); color: var(--muted); }
+.maptools > div:first-child { flex: 1 1 480px; max-width: 790px; min-width: 0; }
+#map { display: block; width: 100%; height: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 22px; padding: 12px 16px 14px; border-top: 1px solid var(--rule); font: 400 14px/1.3 var(--f-display); color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend svg { overflow: visible; }
+
+.land { fill: var(--land); stroke: none; }
+.sphere { fill: none; stroke: var(--rule); }
+.grat { fill: none; stroke: var(--rule); stroke-width: 0.5; opacity: 0.6; }
+/* The map and the index colour dots along one axis per variable: warm/cool for temperature, wet/dry for the rest. */
+.var-temperature { --up: var(--warm); --up-soft: var(--warm-soft); --down: var(--cool); --down-soft: var(--cool-soft); }
+.var-precipitation, .var-wet_day_share, .var-rel_humidity { --up: var(--wet); --up-soft: var(--wet-soft); --down: var(--dry); --down-soft: var(--dry-soft); }
+.dot { cursor: pointer; stroke-width: 1.3; transition: r .15s; }
+.dot.up-1 { fill: var(--up); stroke: var(--ink); stroke-width: 1.5; }
+.dot.up-2 { fill: var(--up-soft); stroke: var(--up); }
+.dot.down-1 { fill: var(--down); stroke: var(--ink); stroke-width: 1.5; }
+.dot.down-2 { fill: var(--down-soft); stroke: var(--down); }
+.dot.none { fill: var(--muted); fill-opacity: .4; stroke: none; }
+.dot:hover, .dot:focus-visible { stroke: var(--ink); stroke-width: 2.4; outline: none; }
+.leader { stroke: var(--muted); stroke-width: 0.9; opacity: .75; pointer-events: none; }
+.mapcap { margin: 0; padding: 10px 16px 0; }
+.maptools .segs { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+
+.index { padding-block: 32px 56px; }
+.index-head { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: end; margin-bottom: 18px; }
+.index-head h2 { font-size: 24px; }
+.search { font: 400 15px/1 var(--f-display); padding: 10px 14px; border-radius: 999px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); width: min(280px, 100%); }
+.regions { columns: 4 230px; column-gap: 32px; }
+.region { break-inside: avoid; margin-bottom: 22px; }
+.region h3 { font: 600 13px/1.3 var(--f-display); text-transform: uppercase; letter-spacing: .09em; color: var(--muted); padding-bottom: 6px; border-bottom: 1px solid var(--rule); margin-bottom: 6px; }
+.region a { display: flex; align-items: center; gap: 9px; text-decoration: none; padding: 4px 0; font: 400 17px/1.35 var(--f-display); }
+.region a:hover { text-decoration: underline; }
+.region a i { width: 11px; height: 11px; border-radius: 50%; flex: none; border: 1.3px solid; }
+.region a .pen { font: 400 11px/1 var(--f-mono); color: var(--muted); margin-left: auto; }
+i.up-1 { background: var(--up); border-color: var(--up); } i.up-2 { background: var(--up-soft); border-color: var(--up); }
+i.down-1 { background: var(--down); border-color: var(--down); } i.down-2 { background: var(--down-soft); border-color: var(--down); }
+i.none { background: var(--muted); border-color: var(--muted); opacity: .4; width: 7px; height: 7px; margin-inline: 2px; }
+
+/* city page */
+.cityhead { padding-block: 28px 18px; display: flex; flex-wrap: wrap; gap: 18px 32px; align-items: end; justify-content: space-between; border-bottom: 2px solid var(--ink); }
+.cityhead .back { font: 500 14px/1 var(--f-display); text-decoration: none; color: var(--muted); }
+.cityhead .back:hover { color: var(--ink); }
+.cityhead h1 { font-size: clamp(36px, 6vw, 64px); line-height: 1; font-weight: 700; margin-top: 10px; }
+.cityhead .where { font: 400 13px/1 var(--f-mono); color: var(--muted); margin-top: 10px; }
+.seasonpick { display: grid; gap: 6px; justify-items: start; }
+
+.lede { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 40px; padding-block: 28px; }
+.lede .story p { margin: 8px 0 0; font-size: 18.5px; line-height: 1.6; max-width: 64ch; }
+.lede .story .soon { color: var(--muted); font-style: italic; }
+.outlook { display: grid; gap: 14px; align-content: start; }
+.ol-row { display: grid; gap: 6px; }
+.ol-top { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.ol-top b { font: 600 15px/1.2 var(--f-display); }
+.ol-top span { font: 500 13px/1 var(--f-mono); color: var(--muted); white-space: nowrap; }
+.terc { display: flex; height: 22px; border-radius: 3px; overflow: hidden; font: 500 11px/22px var(--f-mono); position: relative; }
+.terc .seg { cursor: help; }
+.terc .seg:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+.terc .tick { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px dashed var(--ink); opacity: .4; pointer-events: none; }
+.ol-sub { font: 400 13px/1.45 var(--f-display); color: var(--muted); margin: -4px 0 2px; }
+.ol-top span[data-tip] { cursor: help; border-bottom: 1px dotted var(--muted); }
+.terc div { text-align: center; color: var(--ink); overflow: hidden; white-space: nowrap; min-width: 0; }
+.terc .lo-temperature { background: var(--cool-soft); } .terc .hi-temperature { background: var(--warm-soft); }
+.terc .lo-wet { background: color-mix(in srgb, var(--dry) 40%, var(--panel)); } .terc .hi-wet { background: color-mix(in srgb, var(--wet) 40%, var(--panel)); }
+.terc .near { background: var(--near); }
+.ol-row p { margin: 0; font: 400 13.5px/1.35 var(--f-display); color: var(--muted); }
+.ol-note { font: 400 13px/1.45 var(--f-display); color: var(--muted); margin: 4px 0 0; }
+
+.panel { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; margin-bottom: 22px; }
+.panel-head { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: center; padding: 14px 16px 10px; }
+.panel-head h2 { font-size: 22px; font-weight: 600; }
+.panel-head h2 small { font: 400 13px/1 var(--f-mono); color: var(--muted); margin-left: 8px; }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--rule); padding: 0 16px; overflow-x: auto; }
+.tabs button { font: 600 13.5px/1 var(--f-display); background: none; border: 0; border-bottom: 2px solid transparent; color: var(--muted); padding: 10px 10px 9px; cursor: pointer; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--warm); }
+.chips { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); border-top: 1px solid var(--rule); }
+.chip { padding: 10px 16px; border-right: 1px solid var(--rule); min-width: 0; }
+.chip:last-child { border-right: 0; }
+.chip .v { font: 500 16px/1.25 var(--f-mono); margin-top: 4px; }
+.chip .s { font: 400 12.5px/1.3 var(--f-display); color: var(--muted); margin-top: 2px; }
+.badge { display: inline-block; font: 600 11px/1 var(--f-display); text-transform: uppercase; letter-spacing: .06em; padding: 3px 6px; border-radius: 3px; border: 1px solid var(--ink); margin-left: 4px; vertical-align: 2px; }
+.chart { position: relative; padding: 8px 8px 0; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.caption { padding: 4px 16px 14px; font: 400 13.5px/1.45 var(--f-display); color: var(--muted); max-width: 90ch; margin: 0; }
+.ax text { fill: var(--muted); font: 400 11px var(--f-mono); }
+.ax path, .ax line { stroke: var(--rule); }
+.grid line { stroke: var(--rule); stroke-opacity: .6; }
+.grid path { display: none; }
+.zero { stroke: var(--muted); stroke-width: 1; }
+.bar-warm { fill: var(--warm); } .bar-cool { fill: var(--cool); } .bar-neutral { fill: var(--near); }
+.hatch-fill { fill: var(--warm); }
+.band { fill: var(--near); opacity: .45; }
+.band-label { fill: var(--muted); font: 400 10.5px var(--f-display); }
+.obs-line { fill: none; stroke: var(--muted); stroke-width: 1; opacity: .55; }
+.trend-line { fill: none; stroke: var(--ink); stroke-width: 1.4; stroke-dasharray: 5 4; }
+.model-line { fill: none; stroke: var(--ink); stroke-width: 1.6; }
+.pt-warm { fill: var(--warm); } .pt-cool { fill: var(--cool); } .pt-neutral { fill: var(--panel); stroke: var(--muted); stroke-width: 1.2; }
+.fc-range { stroke: var(--warm); stroke-width: 6; stroke-linecap: round; opacity: .35; }
+.fc-pt { fill: var(--panel); stroke: var(--warm); stroke-width: 2.5; }
+.fc-label { fill: var(--warm); font: 600 11px var(--f-display); }
+.q05 { fill: var(--q05); stroke: var(--q05); } .q50 { fill: var(--q50); stroke: var(--q50); } .q95 { fill: var(--q95); stroke: var(--q95); }
+.qline { fill: none; stroke-width: 1.8; }
+.qdot { stroke: none; opacity: .5; }
+.qlab { font: 600 11px var(--f-display); stroke: none; }
+.now-line { stroke: var(--warm); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.hover-line { stroke: var(--ink); stroke-width: 1; opacity: .35; }
+.tip { position: fixed; z-index: 20; pointer-events: none; background: var(--ink); color: var(--bg); font: 400 12.5px/1.45 var(--f-display); padding: 8px 10px; border-radius: 4px; max-width: 260px; box-shadow: 0 4px 14px rgb(0 0 0 / .18); }
+.tip b { font-weight: 600; }
+.tip .mono { font-size: 12px; }
+
+/* methods */
+.doc { padding-block: 32px 64px; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; }
+.doc nav { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 80px); align-self: start; display: grid; gap: 6px; font: 500 14px/1.3 var(--f-display); }
+.doc nav a { text-decoration: none; color: var(--muted); }
+.doc nav a:hover { color: var(--ink); }
+.doc article { max-width: 72ch; min-width: 0; }
+.doc h1 { font-size: clamp(32px, 5vw, 48px); line-height: 1.05; margin-bottom: 12px; }
+.doc h2 { font-size: 24px; margin: 40px 0 10px; padding-top: 14px; border-top: 2px solid var(--ink); }
+.doc h3 { font-size: 17px; margin: 22px 0 6px; }
+.doc p, .doc li { font-size: 16.5px; }
+.doc code, .doc pre { font-family: var(--f-mono); font-size: 13.5px; }
+.doc pre { background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; padding: 12px 14px; overflow-x: auto; }
+.tbl { overflow-x: auto; }
+.tbl table { border-collapse: collapse; width: 100%; font: 400 14px/1.4 var(--f-display); }
+.tbl th, .tbl td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.tbl th { font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.tbl td.mono { font-size: 13px; white-space: nowrap; }
+
+footer { border-top: 1px solid var(--rule); }
+footer .wrap { padding-block: 20px 28px; font: 400 13px/1.5 var(--f-display); color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+.loading { padding-block: 80px; color: var(--muted); font: 400 15px var(--f-display); }
+
+@media (max-width: 860px) {
+  .hero, .lede { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .hero { padding-block: 28px 20px; }
+  .doc { grid-template-columns: minmax(0, 1fr); }
+  .doc nav { position: static; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+  .brand span { display: none; }
+  .seg button small { display: none; }
+  .maptools .segs { width: 100%; align-items: flex-start; }
+  .seg { flex-wrap: wrap; max-width: 100%; }
+  .seg button { font-size: 14px; padding: 8px 12px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="mast">
+  <div class="wrap">
+    <a class="brand" href="#"><b>C40 El Niño Outlook</b></a>
+    <nav class="nav" aria-label="Main">
+      <a class="btn" id="nav-map" href="#">City map</a>
+      <a class="btn" id="nav-methods" href="#methods">Data &amp; Methods</a>
+    </nav>
+  </div>
+</header>
+<div class="banner" id="banner" hidden><div class="wrap" id="banner-text"></div></div>
+<main id="app"><div class="wrap loading">Loading…</div></main>
+<footer><div class="wrap">
+  <span>Weather: ERA5 reanalysis (Copernicus Climate Change Service). El Niño index: NOAA CPC Relative Oceanic Niño Index (RONI).</span>
+  <span id="foot-run"></span>
+</div></footer>
+<div class="tip" id="tip" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+(function () {
+"use strict";
+const S = { season: "DJF", variable: "temperature", cities: null, meta: null, land: null, cache: {}, tabs: {} };
+try { const s = localStorage.getItem("enso-season"); if (s === "DJF" || s === "MAM") S.season = s; } catch (e) {}
+try { const v = localStorage.getItem("enso-map-var"); if (v && ["temperature", "precipitation", "wet_day_share", "rel_humidity"].includes(v)) S.variable = v; } catch (e) {}
+const app = document.getElementById("app");
+const tip = document.getElementById("tip");
+const SEASON = { DJF: { short: "Dec–Feb", note: "northern winter", hash: "" }, MAM: { short: "Mar–May", note: "northern spring", hash: "-spring" } };
+const VARS = [
+  { key: "temperature", name: "Temperature", unit: "°C", dp: 1, tdp: 2, trendUnit: "°C per decade", lo: "temperature", tails: ["coldest days", "typical day", "hottest days"], seasonal: "Season mean temperature" },
+  { key: "precipitation", name: "Rainfall", unit: "mm", dp: 0, tdp: 0, trendUnit: "mm per decade", lo: "wet", tails: ["light-rain days", "typical rainy day", "heavy-rain days"], seasonal: "Season rainfall total", log: true },
+  { key: "rel_humidity", name: "Relative humidity", unit: "%", dp: 1, tdp: 1, trendUnit: "points per decade", lo: "wet", tails: ["driest-air days", "typical day", "most humid days"], seasonal: "Season mean relative humidity" },
+  { key: "wet_day_share", name: "Rainy days", unit: "% of days", dp: 0, tdp: 1, trendUnit: "points per decade", lo: "wet", seasonal: "Share of days with at least 1 mm of rain" }
+];
+// Map and index colours. Strong survives the FDR correction, Clear is p < 0.05; lower tiers draw as no clear effect.
+const CONF_TIER = { "Strong": 1, "Clear": 2 };
+const fmt = (v, dp) => v == null || !isFinite(v) ? "–" : (+v).toFixed(dp);
+const sgn = (v, dp) => { if (v == null || !isFinite(v)) return "–"; const t = Math.abs(v).toFixed(dp); return (+t === 0 ? "" : v > 0 ? "+" : "−") + t; };
+const pct = v => v == null ? "–" : v > 0.95 ? ">95%" : v < 0.01 ? "<1%" : Math.round(v * 100) + "%";
+const pval = p => p == null ? "–" : p < 0.001 ? "< 0.001" : "= " + p.toFixed(3);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// Words and units for the map's variable switch.
+const MAPVARS = {
+  temperature: { name: "Temperature", q: "How strongly does El Niño shift temperature?", up: "Warmer", down: "Cooler", unit: "°C", dp: 1, chance: ["a warmer-than-normal season", "a cooler-than-normal season"] },
+  precipitation: { name: "Rainfall", q: "How strongly does El Niño shift rainfall?", up: "Wetter", down: "Drier", unit: "mm", dp: 0, chance: ["a wetter-than-normal season", "a drier-than-normal season"] },
+  wet_day_share: { name: "Rainy days", q: "How strongly does El Niño shift the number of rainy days?", up: "More rainy days", down: "Fewer rainy days", unit: "points", dp: 1, chance: ["more rainy days than normal", "fewer rainy days than normal"] },
+  rel_humidity: { name: "Humidity", q: "How strongly does El Niño shift humidity?", up: "More humid", down: "Less humid", unit: "points", dp: 1, chance: ["a more humid season than normal", "a less humid season than normal"] }
+};
+// The selected variable's record for a city in the current season (older index files hold temperature only).
+function vrec(c, season) {
+  const s = c.seasons[season || S.season]; if (!s) return null;
+  if (s.variables) return s.variables[S.variable] || null;
+  return S.variable === "temperature" ? s : null;
+}
+function tier(s) {
+  if (!s) return "none";
+  const t = CONF_TIER[s.confidence];
+  if (!t) return "none";
+  return (s.effect >= 0 ? "up-" : "down-") + t;
+}
+const SIZE_R = { Negligible: 4.4, Noticeable: 5.8, Substantial: 7.6, Dominant: 9.8 };
+const R_NONE = 3.2;
+const dotR = s => (s && CONF_TIER[s.confidence]) ? (SIZE_R[s.size] || SIZE_R.Negligible) : R_NONE;
+
+/* ---------- data ---------- */
+async function getJSON(u) { const r = await fetch(u); if (!r.ok) throw new Error(u + " " + r.status); return r.json(); }
+async function boot() {
+  try {
+    [S.cities, S.meta, S.land] = await Promise.all([getJSON("data/cities.json"), getJSON("data/meta.json"), getJSON("data/land-110m.json")]);
+  } catch (e) {
+    app.innerHTML = '<div class="wrap loading">Could not load the data files in <code>data/</code>. Run <code>python code/run.py</code>, then open the site through a web server (GitHub Pages, or <code>python -m http.server</code> inside <code>site/</code>).</div>';
+    return;
+  }
+  S.cities.sort((a, b) => a.name.localeCompare(b.name));
+  if (S.meta.synthetic) {
+    document.getElementById("banner").hidden = false;
+    document.getElementById("banner-text").textContent = S.meta.synthetic;
+  }
+  document.getElementById("foot-run").textContent = "Data exported " + S.meta.exported + ". Sep–Nov 2026 RONI " + (S.meta.son_2026_estimated ? "estimated at +" : "+") + S.meta.son_2026_roni.toFixed(2) + (S.meta.son_2026_estimated && S.meta.son_2026_roni_sd ? " ± " + S.meta.son_2026_roni_sd.toFixed(2) : "") + " °C.";
+  window.addEventListener("hashchange", route);
+  route();
+}
+
+/* ---------- routing: #  ·  #methods  ·  #<city>  ·  #<city>-spring ---------- */
+function route() {
+  hideTip();
+  const h = decodeURIComponent(location.hash.replace(/^#\/?/, ""));
+  document.getElementById("nav-map").setAttribute("aria-current", h === "" || h === "map" ? "page" : "false");
+  document.getElementById("nav-methods").setAttribute("aria-current", h === "methods" ? "page" : "false");
+  if (h === "" || h === "map") return renderCover();
+  if (h === "methods") return renderMethods();
+  let slug = h, season = "DJF";
+  if (h.endsWith("-spring")) { slug = h.slice(0, -7); season = "MAM"; }
+  const c = S.cities.find(x => x.slug === slug);
+  if (!c) return renderCover();
+  setSeason(season);
+  renderCity(c);
+}
+function setSeason(s) { S.season = s; try { localStorage.setItem("enso-season", s); } catch (e) {} }
+const cityHref = (c, s) => "#" + c.slug + SEASON[s || S.season].hash;
+
+function setVariable(v) { S.variable = v; try { localStorage.setItem("enso-map-var", v); } catch (e) {} }
+function varToggle(id) {
+  return '<div class="seg" role="group" aria-label="Variable" id="' + id + '">' +
+    Object.keys(MAPVARS).map(v => '<button type="button" data-v="' + v + '" aria-pressed="' + (S.variable === v) + '">' + MAPVARS[v].name + '</button>').join("") + '</div>';
+}
+function seasonToggle(id) {
+  return '<div class="seg" role="group" aria-label="Season" id="' + id + '">' +
+    ["DJF", "MAM"].map(s => '<button type="button" data-s="' + s + '" aria-pressed="' + (S.season === s) + '">' + SEASON[s].short + '<small>' + SEASON[s].note + '</small></button>').join("") + '</div>';
+}
+
+/* ---------- tooltip ---------- */
+const TIPS = [];   // tooltip html for elements carrying data-tip="<index>", filled while a city page is built
+function bindTips(root) {
+  root.querySelectorAll("[data-tip]").forEach(el => {
+    const h = TIPS[+el.dataset.tip]; if (!h) return;
+    const at = () => { const r = el.getBoundingClientRect(); return { clientX: r.left + 12, clientY: r.bottom + 2 }; };
+    el.addEventListener("mousemove", ev => showTip(h, ev));
+    el.addEventListener("mouseleave", hideTip);
+    el.addEventListener("click", ev => showTip(h, ev));
+    el.addEventListener("focus", () => showTip(h, at()));
+    el.addEventListener("blur", hideTip);
+  });
+}
+function showTip(html, ev) {
+  tip.innerHTML = html; tip.hidden = false;
+  const w = tip.offsetWidth, h = tip.offsetHeight, pad = 12;
+  let x = ev.clientX + 14, y = ev.clientY + 14;
+  if (x + w > innerWidth - pad) x = ev.clientX - w - 14;
+  if (y + h > innerHeight - pad) y = ev.clientY - h - 14;
+  tip.style.left = Math.max(pad, x) + "px"; tip.style.top = Math.max(pad, y) + "px";
+}
+function hideTip() { tip.hidden = true; }
+
+/* ---------- cover ---------- */
+function renderCover() {
+  document.title = "C40 El Niño Outlook";
+  const m = S.meta, x = m.son_2026_roni;
+  const nStrong = s => S.cities.filter(c => c.seasons[s] && (c.seasons[s].confidence === "Strong" || c.seasons[s].confidence === "Clear")).length;
+  app.innerHTML = `
+  <section class="wrap hero">
+    <div class="head">
+      <div class="label">Outlook for Dec 2026 – May 2027</div>
+      <h1 style="margin-top:10px">A <em>strong El Niño</em> is building. What it means for C40 Cities.</h1>
+    </div>
+    <div>
+      <p>For each of the 96 C40 Cities we measured how temperature, rainfall and humidity in Dec–Feb and Mar–May have responded to El Niño since 1951, separately from long-term warming, for the average season and for its coldest, hottest, driest and wettest days. Pick a city on the map to see its record and its 2027 outlook.</p>
+    </div>
+    <div class="facts">
+      <div><span class="k">El Niño index (RONI), Sep–Nov 2026${m.son_2026_estimated ? ", estimated" : ""}</span><span class="v">+${x.toFixed(2)} °C</span></div>
+      <div><span class="k">Cities where El Niño clearly shifts Dec–Feb temperature</span><span class="v">${nStrong("DJF")} / ${S.cities.length}</span></div>
+      <div><span class="k">… and Mar–May temperature</span><span class="v">${nStrong("MAM")} / ${S.cities.length}</span></div>
+      <div><span class="k">Seasons of record per city</span><span class="v">${m.fit_years[1] - m.fit_years[0] + 1}</span></div>
+    </div>
+  </section>
+  <section class="wrap">
+    <div class="mapbox">
+      <div class="maptools">
+        <div><h2 id="map-q">${esc(MAPVARS[S.variable].q)}</h2>
+        <p>Color shows which way El Niño pushes the season and how strong the evidence is; dot size shows how large this season's push is next to normal year-to-year swings. Grey dots are cities with no clear effect. Select a city to open its page.</p></div>
+        <div class="segs">${seasonToggle("seg-map")}${varToggle("seg-var")}</div>
+      </div>
+      <p class="caption mapcap" id="map-cap"></p>
+      <svg id="map" viewBox="0 0 1000 420" role="img" aria-label="World map of C40 cities colored by El Niño signal"></svg>
+      <div class="legend" id="legend"></div>
+    </div>
+  </section>
+  <section class="wrap index">
+    <div class="index-head"><h2>All cities</h2><input class="search" id="search" type="search" placeholder="Find a city" aria-label="Find a city"></div>
+    <div class="regions" id="regions"></div>
+  </section>`;
+  document.querySelectorAll("#seg-map button").forEach(b => b.onclick = () => {
+    setSeason(b.dataset.s);
+    document.querySelectorAll("#seg-map button").forEach(o => o.setAttribute("aria-pressed", o.dataset.s === S.season));
+    refreshMap();
+  });
+  document.querySelectorAll("#seg-var button").forEach(b => b.onclick = () => {
+    setVariable(b.dataset.v);
+    document.querySelectorAll("#seg-var button").forEach(o => o.setAttribute("aria-pressed", o.dataset.v === S.variable));
+    refreshMap();
+  });
+  document.getElementById("search").oninput = drawIndex;
+  refreshMap();
+  window.scrollTo(0, 0);
+}
+// Everything on the cover that depends on the season or the variable.
+function refreshMap() {
+  const m = S.meta, fy = m.forecast_year;
+  document.getElementById("map-q").textContent = MAPVARS[S.variable].q;
+  document.getElementById("map-cap").textContent = (S.season === "DJF" ? `Dec ${fy - 1}–Feb ${fy}` : `Mar–May ${fy}`) +
+    ` after the Sep–Nov ${fy - 1} El Niño, from ${m.fit_years[1] - m.fit_years[0] + 1} seasons since ${m.fit_years[0]}. Dots in dense clusters are moved apart; a thin line points to the city's position.`;
+  for (const sel of [".mapbox", ".regions"]) { const el = document.querySelector(sel); if (el) el.className = el.className.replace(/\bvar-\S+/g, "").trim() + " var-" + S.variable; }
+  drawMap(); drawIndex(); drawLegend();
+}
+function drawLegend() {
+  const v = MAPVARS[S.variable];
+  const d = (cls, r) => `<svg width="22" height="22" viewBox="-11 -11 22 22"><circle class="dot ${cls}" r="${r}"></circle></svg>`;
+  document.getElementById("legend").innerHTML =
+    `<span>${d("up-1", 6.5)}${esc(v.up)} after El Niño, strong evidence</span><span>${d("up-2", 6.5)}${esc(v.up)}, some evidence</span>` +
+    `<span>${d("down-1", 6.5)}${esc(v.down)}, strong evidence</span><span>${d("down-2", 6.5)}${esc(v.down)}, some evidence</span>` +
+    `<span>${d("none", R_NONE)}No clear effect</span>` +
+    `<span>${["Negligible", "Noticeable", "Substantial", "Dominant"].map(k => d("up-2", SIZE_R[k])).join("")}Dot size: this season's push next to normal year-to-year swings, negligible to dominant</span>`;
+}
+function drawMap() {
+  const svg = d3.select("#map"); if (svg.empty()) return;
+  svg.selectAll("*").remove();
+  const frameLine = { type: "MultiPoint", coordinates: d3.range(-180, 181, 5).flatMap(lon => [[lon, -56], [lon, 0], [lon, 76]]) };
+  const proj = d3.geoEqualEarth().fitWidth(1000, frameLine);
+  const H = Math.ceil(d3.geoPath(proj).bounds(frameLine)[1][1]);
+  proj.clipExtent([[0, 0], [1000, H]]);
+  svg.attr("viewBox", `0 0 1000 ${H}`);
+  const path = d3.geoPath(proj);
+  svg.append("path").attr("class", "grat").attr("d", path(d3.geoGraticule10()));
+  svg.append("path").attr("class", "land").attr("d", path(topojson.feature(S.land, S.land.objects.land)));
+  const nodes = S.cities.map(c => { const s = vrec(c), p = proj([c.lon, c.lat]); return { c, s, r: dotR(s), x0: p[0], y0: p[1], x: p[0], y: p[1] }; });
+  // Neighbouring cities (Gauteng, the Pearl River and Yangtze deltas, the Pacific Northwest) overlap at this
+  // scale; a short collision relaxation moves them apart, and a leader line keeps the true position in view.
+  const sim = d3.forceSimulation(nodes).alphaDecay(0.05)
+    .force("x", d3.forceX(d => d.x0).strength(0.4)).force("y", d3.forceY(d => d.y0).strength(0.4))
+    .force("collide", d3.forceCollide(d => d.r + 1.4).iterations(3)).stop();
+  for (let i = 0; i < 200; i++) sim.tick();
+  nodes.sort((a, b) => b.r - a.r);
+  svg.append("g").selectAll("line").data(nodes.filter(d => Math.hypot(d.x - d.x0, d.y - d.y0) > 1.5)).join("line")
+    .attr("class", "leader").attr("x1", d => d.x0).attr("y1", d => d.y0).attr("x2", d => d.x).attr("y2", d => d.y);
+  svg.append("g").selectAll("circle").data(nodes).join("circle")
+    .attr("class", d => "dot " + tier(d.s)).attr("cx", d => d.x).attr("cy", d => d.y)
+    .attr("r", d => d.r).attr("tabindex", 0).attr("role", "link")
+    .attr("aria-label", d => d.c.name + ": " + (d.s?.confidence || "no data"))
+    .on("mousemove", (ev, d) => showTip(cityTip(d.c, d.s), ev))
+    .on("mouseleave", hideTip)
+    .on("click", (ev, d) => { location.hash = cityHref(d.c); })
+    .on("keydown", (ev, d) => { if (ev.key === "Enter") location.hash = cityHref(d.c); });
+}
+function cityTip(c, s) {
+  if (!s) return "<b>" + esc(c.name) + "</b>";
+  const v = MAPVARS[S.variable], up = s.effect >= 0;
+  const dir = up ? v.up.toLowerCase() : v.down.toLowerCase();
+  const chance = up ? ["Chance of " + v.chance[0], s.p_above] : ["Chance of " + v.chance[1], s.p_below];
+  return `<b>${esc(c.name)}</b> · ${esc(c.region)}<br>${v.name}, ${SEASON[S.season].short} after El Niño: ${CONF_TIER[s.confidence] ? dir : "no clear shift"}<br>` +
+    `Confidence: ${esc(s.confidence)}<br>This season: <span class="mono">${sgn(s.effect, v.dp)} ${v.unit}</span>, ${esc(s.size || "")}` +
+    (chance[1] != null ? `<br>${chance[0]}: ${pct(chance[1])}` : "");
+}
+function drawIndex() {
+  const el = document.getElementById("regions"); if (!el) return;
+  const q = (document.getElementById("search").value || "").trim().toLowerCase();
+  const groups = d3.groups(S.cities.filter(c => !q || c.name.toLowerCase().includes(q)), c => c.region).sort((a, b) => a[0].localeCompare(b[0]));
+  el.innerHTML = groups.map(([r, cs]) => `<div class="region"><h3>${esc(r)}</h3>` +
+    cs.map(c => `<a href="${cityHref(c)}"><i class="${tier(vrec(c))}"></i>${esc(c.name)}</a>`).join("") + "</div>").join("") ||
+    '<p class="caption">No city matches that name.</p>';
+}
+
+/* ---------- city page ---------- */
+async function renderCity(c) {
+  TIPS.length = 0;
+  document.title = c.name + " · C40 El Niño Outlook";
+  if (!S.cache[c.slug]) {
+    app.innerHTML = '<div class="wrap loading">Loading ' + esc(c.name) + '…</div>';
+    try { S.cache[c.slug] = await getJSON("data/city/" + c.slug + ".json"); }
+    catch (e) { app.innerHTML = '<div class="wrap loading">Could not load data/city/' + esc(c.slug) + '.json.</div>'; return; }
+  }
+  const D = S.cache[c.slug], sd = D.seasons[S.season];
+  const latS = Math.abs(c.lat).toFixed(2) + "°" + (c.lat >= 0 ? "N" : "S"), lonS = Math.abs(c.lon).toFixed(2) + "°" + (c.lon >= 0 ? "E" : "W");
+  app.innerHTML = `
+  <section class="wrap cityhead">
+    <div><a class="back" href="#">← All cities</a><h1>${esc(c.name)}</h1><div class="where">${esc(c.region)} · ${latS}, ${lonS} · ERA5 grid point</div></div>
+    <div class="seasonpick"><span class="label">Season</span>${seasonToggle("seg-city")}</div>
+  </section>
+  ${sd ? cityBody(c, D, sd) : '<div class="wrap loading">No data for this season.</div>'}`;
+  bindTips(app);
+  document.querySelectorAll("#seg-city button").forEach(b => b.onclick = () => { if (b.dataset.s !== S.season) location.hash = cityHref(c, b.dataset.s); });
+  if (sd) drawCityCharts(D, sd);
+  window.scrollTo(0, 0);
+}
+function cityBody(c, D, sd) {
+  const m = S.meta;
+  const story = sd.paragraph
+    ? `<p>${esc(sd.paragraph)}</p>`
+    : `<p class="soon">A written description for ${esc(c.name)} is coming soon. The outlook and the charts below are complete.</p>`;
+  const rain = sd.variables.precipitation;
+  const outlook = VARS.map(v => {
+    const x = sd.variables[v.key]; if (!x) return "";
+    if (rain && rain.dry_season && (v.key === "precipitation" || v.key === "wet_day_share")) {
+      // Too little rain to rank: the normal is under meta.dry_season_mm, so thirds of a few millimetres mean nothing.
+      return v.key === "precipitation" ? `<div class="ol-row"><div class="ol-top"><b>Rainfall and rainy days</b><span>too dry to call</span></div>
+        <p>About ${fmt(rain.normal_1991_2020, 0)} mm falls in a normal ${SEASON[S.season].short}; the outlook does not rank totals this small.</p></div>` : "";
+    }
+    const lo = x.p_below, mid = x.p_near, hi = x.p_above;
+    const loC = v.lo === "temperature" ? "lo-temperature" : "lo-wet", hiC = v.lo === "temperature" ? "hi-temperature" : "hi-wet";
+    const loT = { temperature: "Cooler", precipitation: "Drier", rel_humidity: "Less humid", wet_day_share: "Fewer rainy days" }[v.key];
+    const hiT = { temperature: "Warmer", precipitation: "Wetter", rel_humidity: "More humid", wet_day_share: "More rainy days" }[v.key];
+    const loS = { temperature: "Cooler", precipitation: "Drier", rel_humidity: "Less humid", wet_day_share: "Fewer" }[v.key];
+    const hiS = { temperature: "Warmer", precipitation: "Wetter", rel_humidity: "More humid", wet_day_share: "More" }[v.key];
+    // Words for the thresholds: a value is "below normal" when it falls in the lower third of 1991-2020 seasons.
+    const lvl = n => v.key === "wet_day_share" ? fmt(n, 0) + "% of days" : v.unit === "%" ? fmt(n, v.dp) + "%" : fmt(n, v.dp) + " " + v.unit;
+    const T = { temperature: ["a season mean below", "a season mean between", "a season mean above"],
+                precipitation: ["a season total below", "a season total between", "a season total above"],
+                rel_humidity: ["a season mean below", "a season mean between", "a season mean above"],
+                wet_day_share: ["rain on fewer than", "rain on between", "rain on more than"] }[v.key];
+    const f = x.fit || {}, hasB = f.tercile_low != null;
+    const rng = i => !hasB ? "" : i === 0 ? ` ${loT} than normal means ${T[0]} ${lvl(f.tercile_low)}, the lower third of 1991–2020 seasons.`
+      : i === 1 ? ` Near normal means ${T[1]} ${lvl(f.tercile_low)} and ${lvl(f.tercile_high)}, the middle third of 1991–2020 seasons.`
+      : ` ${hiT} than normal means ${T[2]} ${lvl(f.tercile_high)}, the upper third of 1991–2020 seasons.`;
+    const mv = MAPVARS[v.key], nearPhrase = v.key === "wet_day_share" ? "a normal number of rainy days" : "a near-normal season";
+    const even = " With nothing to go on, each third would have a 33% chance.";
+    const seg = (cls, p, word, tip) => {
+      const id = TIPS.push(tip) - 1;
+      return `<div class="seg ${cls}" style="width:${(p * 100).toFixed(1)}%" data-tip="${id}" tabindex="0">${p >= 0.3 ? word + " " + pct(p) : p >= 0.08 ? pct(p) : ""}</div>`;
+    };
+    const bar = seg(loC, lo, loS, `<b>Chance of ${mv.chance[1]}: ${pct(lo)}</b><br>${esc(rng(0).trim())}${even}`)
+      + seg("near", mid, "Near normal", `<b>Chance of ${nearPhrase}: ${pct(mid)}</b><br>${esc(rng(1).trim())}${even}`)
+      + seg(hiC, hi, hiS, `<b>Chance of ${mv.chance[0]}: ${pct(hi)}</b><br>${esc(rng(2).trim())}${even}`)
+      + `<i class="tick" style="left:33.33%"></i><i class="tick" style="left:66.67%"></i>`;
+    // The expected value and what moves it: the trend's level in the forecast year plus El Niño's push.
+    const pu = v.unit === "°C" ? " °C" : v.unit === "mm" ? " mm" : " points";
+    const anomTxt = `${sgn(x.expected_anomaly_2027, v.dp)}${pu} vs normal`;
+    let why = "", anomTip = "";
+    if (x.trend_part_2027 != null && x.forecast_mean != null) {
+      const expected = v.key === "wet_day_share" ? `rain on ${lvl(x.forecast_mean)}` : lvl(x.forecast_mean);
+      why = `Expected ${expected} against a normal of ${lvl(x.normal_1991_2020)}: ${sgn(x.trend_part_2027, v.dp)}${pu} from the long-term trend, ${sgn(x.effect_this_season, v.dp)}${pu} from El Niño${S.meta.shrink ? " after shrinkage" : ""}.`;
+      anomTip = `<b>${anomTxt}</b><br>${esc(why)}${x.forecast_sd != null ? ` The forecast spread is ±${fmt(x.forecast_sd, v.dp)}${pu}.` : ""}${pu === " points" ? " Points are percentage points." : ""}`;
+    }
+    const anomId = anomTip ? TIPS.push(anomTip) - 1 : null;
+    return `<div class="ol-row"><div class="ol-top"><b>${v.name}</b><span${anomId != null ? ` data-tip="${anomId}" tabindex="0"` : ""}>${anomTxt}</span></div>
+      <div class="terc" role="img" aria-label="${loT} ${pct(lo)}, near normal ${pct(mid)}, ${hiT.toLowerCase()} ${pct(hi)}">${bar}</div>
+      <p>${esc(x.forecast_words || "")}${why ? ". " + esc(why) : ""}</p></div>`;
+  }).join("");
+  return `
+  <section class="wrap lede">
+    <div class="story"><div class="label">${esc(sd.season_name)}</div>${story}</div>
+    <div class="outlook"><div class="label">Outlook for ${esc(sd.season_name)}</div>
+      <p class="ol-sub">Each bar gives the chance that the season lands in the lower, middle or upper third of the 1991–2020 seasons. With nothing to go on, each third would have a one-in-three chance; the dashed marks show that even split. Hover or tap a bar for the thresholds.</p>${outlook}
+      <p class="ol-note">Based on a Sep–Nov 2026 El Niño index (RONI) of +${m.son_2026_roni.toFixed(2)}${m.son_2026_estimated && m.son_2026_roni_sd ? " ± " + m.son_2026_roni_sd.toFixed(2) : ""} °C${m.son_2026_estimated ? " (an estimate until CPC publishes it in early December)" : ""}, plus each city's long-term trend.${m.roni_record_max != null && m.son_2026_roni > m.roni_record_max ? ` That index is above the largest Sep–Nov value in the fit (+${m.roni_record_max.toFixed(2)} °C, in 1997), so the odds extend the fitted lines beyond the observed range.` : ""}${m.shrink ? " Each El Niño effect enters after shrinkage toward zero (see Methods), so uncertain effects barely tilt the odds." : ""}</p></div>
+  </section>
+  <section class="wrap">
+    <div class="panel" id="p-roni">
+      <div class="panel-head"><h2>El Niño index before each season</h2><span class="label">Sep–Nov RONI, ${S.season === "DJF" ? "3" : "6"} months ahead</span></div>
+      <div class="chart" id="c-roni"></div>
+      <p class="caption">Each bar is the Relative Oceanic Niño Index for Sep–Nov of the year before the season. Red bars are El Niño-leaning years, blue bars La Niña-leaning. The hatched bar is this year's${m.son_2026_estimated ? " estimated" : ""} value, ${m.roni_record_max != null && m.son_2026_roni > m.roni_record_max ? "stronger than any on record" : "stronger than all but a few on record"}.</p>
+    </div>
+    ${VARS.map(v => sd.variables[v.key] ? varPanel(v, sd.variables[v.key]) : "").join("")}
+  </section>`;
+}
+function varPanel(v, x) {
+  const PCT_TAB = { temperature: "Changes in coolest, median and hottest days", precipitation: "Changes in lightest, median and heaviest rain days", rel_humidity: "Changes in driest, median and most humid days" };
+  const tabs = [["time", "Yearly time series"], ...(x.yearly && x.quantile_fit ? [["pct", PCT_TAB[v.key] || "Changes in the lowest, median and highest days"]] : []), ["enso", "Regressed against an El Niño index"]];
+  const cur = S.tabs[v.key] && tabs.some(t => t[0] === S.tabs[v.key]) ? S.tabs[v.key] : "time";
+  const trendTxt = v.key === "precipitation" && x.trend_pct_of_normal_per_decade != null ? ` (${sgn(x.trend_pct_of_normal_per_decade, 0)}% of normal)` : "";
+  const once = x.once_every_n_years_without_el_nino;
+  const unitEff = v.unit === "%" || v.unit === "% of days" ? "points" : v.unit;
+  return `<div class="panel" id="p-${v.key}">
+    <div class="panel-head"><h2>${v.name}<small>${esc(v.seasonal.toLowerCase())}</small></h2></div>
+    <div class="tabs" role="tablist">${tabs.map(t => `<button role="tab" data-v="${v.key}" data-t="${t[0]}" aria-selected="${t[0] === cur}">${t[1]}</button>`).join("")}</div>
+    <div class="chart" id="c-${v.key}" data-tab="${cur}"></div>
+    <p class="caption" id="cap-${v.key}"></p>
+    <div class="chips">
+      <div class="chip"><div class="label">Long-term trend</div><div class="v">${sgn(x.trend_per_decade, v.tdp)}</div><div class="s">${v.trendUnit}${trendTxt}</div></div>
+      <div class="chip"><div class="label">El Niño effect</div><div class="v">${sgn(x.enso_effect_per_degC, v.tdp)}</div><div class="s">${unitEff} per +1 °C of Sep–Nov RONI</div></div>
+      <div class="chip"><div class="label">Confidence</div><div class="v" style="font-family:var(--f-display);font-weight:600">${esc(x.confidence)}${x.survives_fdr ? '<span class="badge" title="Survives the false-discovery-rate correction across all ${S.meta.n_tests || 768} tests">FDR</span>' : ""}</div><div class="s">p ${pval(x.enso_p)}; explains ${pct(x.fraction_explained)} of year-to-year swings</div></div>
+      <div class="chip"><div class="label">Size this season</div><div class="v" style="font-family:var(--f-display);font-weight:600">${esc(x.size)}</div><div class="s">${sgn(x.effect_this_season, v.dp)} ${unitEff}, ${fmt(x.effect_ratio, 1)}× a normal swing${x.shrink_factor != null ? ` (${Math.round(x.shrink_factor * 100)}% of the fitted effect after shrinkage)` : ""}${once ? `; without El Niño about once every ${once} years` : ""}</div></div>
+    </div>
+  </div>`;
+}
+function drawCityCharts(D, sd) {
+  drawRoni(sd);
+  VARS.forEach(v => { if (sd.variables[v.key]) drawVar(v, sd); });
+  document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+    S.tabs[b.dataset.v] = b.dataset.t;
+    b.parentElement.querySelectorAll("button").forEach(o => o.setAttribute("aria-selected", o === b));
+    document.getElementById("c-" + b.dataset.v).dataset.tab = b.dataset.t;
+    drawVar(VARS.find(v => v.key === b.dataset.v), sd);
+  });
+}
+
+/* ---------- charts ---------- */
+const W = el => Math.max(300, el.clientWidth - 16);
+function frame(el, h, m) {
+  el.innerHTML = "";
+  const w = W(el);
+  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${w} ${h}`);
+  return { svg, w, h, iw: w - m.l - m.r, ih: h - m.t - m.b, g: svg.append("g").attr("transform", `translate(${m.l},${m.t})`) };
+}
+function yearAxis(g, x, ih, w) {
+  g.append("g").attr("class", "ax").attr("transform", `translate(0,${ih})`).call(d3.axisBottom(x).ticks(w < 520 ? 5 : 10).tickFormat(d3.format("d")).tickSizeOuter(0));
+}
+function leadClass(l) { return l > 0.5 ? "pt-warm" : l < -0.5 ? "pt-cool" : "pt-neutral"; }
+function leadWord(l) { return l > 0.5 ? "El Niño-leaning" : l < -0.5 ? "La Niña-leaning" : "neutral"; }
+function hoverYears(g, x, ih, iw, years, html) {
+  const line = g.append("line").attr("class", "hover-line").attr("y1", 0).attr("y2", ih).style("display", "none");
+  g.append("rect").attr("width", iw).attr("height", ih).attr("fill", "transparent")
+    .on("mousemove", ev => {
+      const [mx] = d3.pointer(ev);
+      const yr = Math.round(x.invert(mx));
+      const i = years.indexOf(yr);
+      const content = html(yr, i);
+      if (!content) { hideTip(); line.style("display", "none"); return; }
+      line.attr("x1", x(yr)).attr("x2", x(yr)).style("display", null);
+      showTip(content, ev);
+    })
+    .on("mouseleave", () => { hideTip(); line.style("display", "none"); });
+}
+function drawRoni(sd) {
+  const el = document.getElementById("c-roni");
+  const m = { t: 10, r: 14, b: 26, l: 40 }, F = frame(el, 170, m), FY = S.meta.forecast_year, xr = S.meta.son_2026_roni;
+  const yrs = sd.years, L = sd.roni_lead;
+  const x = d3.scaleLinear().domain([yrs[0] - 1, FY + 1]).range([0, F.iw]);
+  const ext = d3.extent(L.concat([xr]));
+  const y = d3.scaleLinear().domain([Math.min(-2, ext[0]), Math.max(2, ext[1])]).nice().range([F.ih, 0]);
+  const bw = Math.max(1.5, F.iw / (FY - yrs[0] + 3) * 0.75);
+  const defs = F.svg.append("defs");
+  defs.append("pattern").attr("id", "hatch").attr("patternUnits", "userSpaceOnUse").attr("width", 5).attr("height", 5).attr("patternTransform", "rotate(45)")
+    .append("rect").attr("class", "hatch-fill").attr("width", 2.2).attr("height", 5);
+  F.g.append("g").attr("class", "ax grid").call(d3.axisLeft(y).ticks(5).tickSize(-F.iw).tickFormat(d => (d > 0 ? "+" : "") + d));
+  yearAxis(F.g, x, F.ih, F.w);
+  F.g.append("g").selectAll("rect").data(yrs.map((yr, i) => [yr, L[i]])).join("rect")
+    .attr("class", d => d[1] > 0.5 ? "bar-warm" : d[1] < -0.5 ? "bar-cool" : "bar-neutral")
+    .attr("x", d => x(d[0]) - bw / 2).attr("width", bw).attr("y", d => y(Math.max(0, d[1]))).attr("height", d => Math.abs(y(d[1]) - y(0)));
+  F.g.append("rect").attr("x", x(FY) - bw / 2).attr("width", bw).attr("y", y(xr)).attr("height", y(0) - y(xr)).attr("fill", "url(#hatch)");
+  F.g.append("text").attr("class", "fc-label").attr("x", x(FY)).attr("y", y(xr) - 5).attr("text-anchor", "end").text(FY);
+  F.g.append("line").attr("class", "zero").attr("x1", 0).attr("x2", F.iw).attr("y1", y(0)).attr("y2", y(0));
+  hoverYears(F.g, x, F.ih, F.iw, yrs, (yr, i) => {
+    if (yr === FY) return `<b>${SEASON[S.season].short} ${FY}</b><br>Sep–Nov ${FY - 1} RONI <span class="mono">+${xr.toFixed(2)}</span>${S.meta.son_2026_estimated ? " (estimate)" : ""}`;
+    if (i < 0) return null;
+    return `<b>${SEASON[S.season].short} ${yr}</b><br>Sep–Nov ${yr - 1} RONI <span class="mono">${sgn(L[i], 2)}</span> · ${leadWord(L[i])}`;
+  });
+}
+function drawVar(v, sd) {
+  const el = document.getElementById("c-" + v.key), tab = el.dataset.tab, x = sd.variables[v.key];
+  const cap = document.getElementById("cap-" + v.key);
+  if (tab === "pct") { drawPct(el, v, x, sd); cap.textContent = pctCaption(v, x); }
+  else if (tab === "enso") { drawScatter(el, v, x, sd); cap.textContent = `Each dot is one ${SEASON[S.season].short} season, shifted to today's climate by removing the long-term trend, plotted against the El Niño index (RONI) of the fall before. The slope of the line is El Niño's effect. The dashed red line marks this year's Sep–Nov value.`; }
+  else { drawTime(el, v, x, sd); cap.textContent = `Dots are observed ${SEASON[S.season].short} values, colored by the El Niño state of the fall before. The dashed line is the long-term trend; the solid line adds El Niño's effect. The gray band is the near-normal third of 1991–2020 seasons. The ring at ${S.meta.forecast_year} is the expected value with its likely range (80%).`; }
+}
+function pctCaption(v, x) {
+  const p = x.percentiles || {};
+  const part = (k, name) => p[k] ? `${name} ${sgn(p[k].shift_this_season, v.dp)} ${v.unit === "mm" ? "mm/day" : v.unit === "%" ? "points" : v.unit}` : null;
+  const shifts = [part("p05", v.tails[0]), part("p95", v.tails[2])].filter(Boolean).join(", ");
+  return `Dots are each season's ${v.tails[0]} (5th percentile), ${v.tails[1]} (median) and ${v.tails[2]} (95th percentile)${v.key === "precipitation" ? ", using days with at least 1 mm of rain (log scale)" : ""}. Lines are the fitted quantile regressions with trend and El Niño; diamonds are the ${S.meta.forecast_year} values. This year's El Niño shifts: ${shifts || "–"}.`;
+}
+function drawTime(el, v, x, sd) {
+  const m = { t: 14, r: 18, b: 26, l: 46 }, F = frame(el, 300, m), FY = S.meta.forecast_year;
+  const yrs = sd.years, L = sd.roni_lead, vals = x.values, f = x.fit;
+  const xs = d3.scaleLinear().domain([yrs[0] - 1, FY + 1]).range([0, F.iw]);
+  const fm = x.forecast_mean, fs = x.forecast_sd, z = 1.2816;
+  const all = vals.filter(d => d != null).concat(fm != null ? [fm - z * fs, fm + z * fs] : []);
+  const y = d3.scaleLinear().domain(d3.extent(all)).nice().range([F.ih, 0]);
+  F.g.append("g").attr("class", "ax grid").call(d3.axisLeft(y).ticks(5).tickSize(-F.iw));
+  yearAxis(F.g, xs, F.ih, F.w);
+  if (f && f.tercile_low != null) {
+    F.g.append("rect").attr("class", "band").attr("x", 0).attr("width", F.iw).attr("y", y(f.tercile_high)).attr("height", Math.max(0, y(f.tercile_low) - y(f.tercile_high)));
+    F.g.append("text").attr("class", "band-label").attr("x", 4).attr("y", y(f.tercile_high) + 11).text("near normal (1991–2020)");
+  }
+  const pts = yrs.map((yr, i) => ({ yr, v: vals[i], l: L[i] })).filter(d => d.v != null);
+  F.g.append("path").attr("class", "obs-line").attr("d", d3.line().x(d => xs(d.yr)).y(d => y(d.v))(pts));
+  if (f) {
+    const tr = yrs.concat([FY]).map(yr => [xs(yr), y(f.a2027 + f.c * (yr - FY))]);
+    F.g.append("path").attr("class", "trend-line").attr("d", d3.line()(tr));
+    const md = yrs.map((yr, i) => [xs(yr), y(f.a2027 + f.b * L[i] + f.c * (yr - FY))]);
+    F.g.append("path").attr("class", "model-line").attr("d", d3.line().curve(d3.curveStep)(md)).attr("opacity", .55);
+  }
+  F.g.append("g").selectAll("circle").data(pts).join("circle").attr("class", d => leadClass(d.l)).attr("cx", d => xs(d.yr)).attr("cy", d => y(d.v)).attr("r", 3.4);
+  if (fm != null) {
+    F.g.append("line").attr("class", "fc-range").attr("x1", xs(FY)).attr("x2", xs(FY)).attr("y1", y(fm - z * fs)).attr("y2", y(fm + z * fs));
+    F.g.append("circle").attr("class", "fc-pt").attr("cx", xs(FY)).attr("cy", y(fm)).attr("r", 5.5);
+  }
+  F.g.append("text").attr("class", "ax").attr("x", -m.l + 4).attr("y", -4).append("tspan").attr("fill", "currentColor").text("");
+  F.svg.append("text").attr("x", 4).attr("y", 10).attr("class", "band-label").text(v.unit);
+  hoverYears(F.g, xs, F.ih, F.iw, yrs, (yr, i) => {
+    if (yr === FY && fm != null) return `<b>${SEASON[S.season].short} ${FY} outlook</b><br>Expected <span class="mono">${fmt(fm, v.dp)} ${v.unit}</span><br>Likely range <span class="mono">${fmt(fm - z * fs, v.dp)}–${fmt(fm + z * fs, v.dp)}</span><br>${esc(x.forecast_words || "")}`;
+    if (i < 0 || vals[i] == null) return null;
+    const model = f ? f.a2027 + f.b * L[i] + f.c * (yr - FY) : null;
+    return `<b>${SEASON[S.season].short} ${yr}</b><br>Observed <span class="mono">${fmt(vals[i], v.dp)} ${v.unit}</span><br>Trend + El Niño <span class="mono">${fmt(model, v.dp)}</span><br>Fall RONI <span class="mono">${sgn(L[i], 2)}</span> · ${leadWord(L[i])}`;
+  });
+}
+function drawPct(el, v, x, sd) {
+  const m = { t: 14, r: 76, b: 26, l: 46 }, F = frame(el, 320, m), FY = S.meta.forecast_year, xr = S.meta.son_2026_roni;
+  const yrs = sd.years, L = sd.roni_lead, Y = x.yearly, Q = x.quantile_fit;
+  const xs = d3.scaleLinear().domain([yrs[0] - 1, FY + 1]).range([0, F.iw]);
+  const keys = ["p05", "p50", "p95"].filter(k => Y[k]);
+  const lineAt = (q, yr, l) => q.intercept + q.b * l + q.c * (yr - q.tbar);
+  let all = []; keys.forEach(k => { all = all.concat(Y[k].filter(d => d != null)); if (Q[k]) all.push(lineAt(Q[k], FY, xr)); });
+  let y;
+  if (v.log) {
+    const lo = Math.max(1, d3.min(all)), hi = d3.max(all);
+    y = d3.scaleLog().domain([lo * 0.9, hi * 1.1]).range([F.ih, 0]);
+    const ticks = [1, 2, 5, 10, 20, 50, 100, 200, 500].filter(t => t >= lo * 0.9 && t <= hi * 1.1);
+    F.g.append("g").attr("class", "ax grid").call(d3.axisLeft(y).tickValues(ticks).tickFormat(d3.format("d")).tickSize(-F.iw));
+  } else {
+    y = d3.scaleLinear().domain(d3.extent(all)).nice().range([F.ih, 0]);
+    F.g.append("g").attr("class", "ax grid").call(d3.axisLeft(y).ticks(6).tickSize(-F.iw));
+  }
+  yearAxis(F.g, xs, F.ih, F.w);
+  const names = { p05: "5th", p50: "median", p95: "95th" };
+  keys.forEach(k => {
+    const d = yrs.map((yr, i) => [yr, Y[k][i]]).filter(p => p[1] != null && (!v.log || p[1] > 0));
+    F.g.append("g").selectAll("circle").data(d).join("circle").attr("class", "qdot q" + k.slice(1)).attr("cx", p => xs(p[0])).attr("cy", p => y(p[1])).attr("r", 2.6);
+    if (Q[k]) {
+      const ln = yrs.map((yr, i) => [xs(yr), y(Math.max(v.log ? 0.5 : -1e9, lineAt(Q[k], yr, L[i])))]);
+      F.g.append("path").attr("class", "qline q" + k.slice(1)).attr("fill", "none").attr("d", d3.line().curve(d3.curveStep)(ln));
+      const y27 = lineAt(Q[k], FY, xr);
+      F.g.append("path").attr("class", "q" + k.slice(1)).attr("d", d3.symbol(d3.symbolDiamond, 70)()).attr("transform", `translate(${xs(FY)},${y(Math.max(v.log ? 0.5 : -1e9, y27))})`);
+      F.g.append("text").attr("class", "qlab q" + k.slice(1)).attr("x", F.iw + 8).attr("y", y(Math.max(v.log ? 0.5 : -1e9, y27)) + 4).text(names[k]);
+    }
+  });
+  F.svg.append("text").attr("x", 4).attr("y", 10).attr("class", "band-label").text(v.key === "precipitation" ? "mm/day" : v.unit);
+  hoverYears(F.g, xs, F.ih, F.iw, yrs, (yr, i) => {
+    if (yr === FY) return `<b>${SEASON[S.season].short} ${FY}, fitted</b><br>` + keys.filter(k => Q[k]).map(k => `${names[k]}: <span class="mono">${fmt(lineAt(Q[k], FY, xr), v.dp)}</span>`).join("<br>");
+    if (i < 0) return null;
+    return `<b>${SEASON[S.season].short} ${yr}</b> · RONI <span class="mono">${sgn(L[i], 2)}</span><br>` +
+      keys.map((k, j) => `${v.tails[j === 0 ? 0 : j === 1 ? 1 : 2]} (${names[k]}): <span class="mono">${fmt(Y[k][i], v.dp)}</span>`).join("<br>");
+  });
+}
+function drawScatter(el, v, x, sd) {
+  const m = { t: 14, r: 18, b: 40, l: 46 }, F = frame(el, 300, m), FY = S.meta.forecast_year, xr = S.meta.son_2026_roni, f = x.fit;
+  if (!f) { el.innerHTML = '<p class="caption">No fit available.</p>'; return; }
+  const pts = sd.years.map((yr, i) => ({ yr, l: sd.roni_lead[i], v: x.values[i] == null ? null : x.values[i] - f.c * (yr - FY) })).filter(d => d.v != null);
+  const xe = d3.extent(pts.map(d => d.l).concat([xr]));
+  const xs = d3.scaleLinear().domain([Math.min(-2, xe[0]), Math.max(2, xe[1])]).nice().range([0, F.iw]);
+  const fm = x.forecast_mean;
+  const y = d3.scaleLinear().domain(d3.extent(pts.map(d => d.v).concat(fm != null ? [fm] : []))).nice().range([F.ih, 0]);
+  F.g.append("g").attr("class", "ax grid").call(d3.axisLeft(y).ticks(5).tickSize(-F.iw));
+  F.g.append("g").attr("class", "ax").attr("transform", `translate(0,${F.ih})`).call(d3.axisBottom(xs).ticks(6).tickFormat(d => (d > 0 ? "+" : "") + d).tickSizeOuter(0));
+  F.g.append("text").attr("class", "band-label").attr("x", F.iw / 2).attr("y", F.ih + 34).attr("text-anchor", "middle").text("Sep–Nov RONI the fall before (°C)  ·  La Niña ← → El Niño");
+  F.g.append("line").attr("class", "now-line").attr("x1", xs(xr)).attr("x2", xs(xr)).attr("y1", 0).attr("y2", F.ih);
+  F.g.append("text").attr("class", "fc-label").attr("x", xs(xr) - 5).attr("y", 10).attr("text-anchor", "end").text("this year");
+  const d0 = xs.domain();
+  F.g.append("line").attr("class", "model-line").attr("x1", xs(d0[0])).attr("x2", xs(d0[1])).attr("y1", y(f.a2027 + f.b * d0[0])).attr("y2", y(f.a2027 + f.b * d0[1]));
+  F.g.append("g").selectAll("circle").data(pts).join("circle").attr("class", d => leadClass(d.l)).attr("cx", d => xs(d.l)).attr("cy", d => y(d.v)).attr("r", 4)
+    .on("mousemove", (ev, d) => showTip(`<b>${SEASON[S.season].short} ${d.yr}</b><br>RONI <span class="mono">${sgn(d.l, 2)}</span><br>Value in today's climate <span class="mono">${fmt(d.v, v.dp)} ${v.unit}</span>`, ev))
+    .on("mouseleave", hideTip);
+  if (fm != null) F.g.append("circle").attr("class", "fc-pt").attr("cx", xs(xr)).attr("cy", y(fm)).attr("r", 5.5);
+  F.svg.append("text").attr("x", 4).attr("y", 10).attr("class", "band-label").text(v.unit);
+}
+
+let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => {
+  const h = location.hash.replace(/^#\/?/, "");
+  if (document.getElementById("c-roni")) { const c = S.cities.find(c => cityHref(c) === "#" + h || c.slug === h); if (c && S.cache[c.slug]) drawCityCharts(S.cache[c.slug], S.cache[c.slug].seasons[S.season]); }
+}, 150); });
+
+/* ---------- methods ---------- */
+function renderMethods() {
+  document.title = "Data & Methods · C40 El Niño Outlook";
+  const m = S.meta;
+  const conf = m.strong_is_fdr
+    ? [["Strong", "survives the false-discovery-rate correction at 5% (p ≤ 0.011 in this family)"], ["Clear", "p < 0.05"], ["Suggestive", "0.05 ≤ p < 0.10"], ["No identifiable effect", "p ≥ 0.10"]]
+        .map(r => `<tr><td>${r[0]}</td><td class="mono">${r[1]}</td></tr>`).join("")
+    : m.confidence.map((r, i, a) => `<tr><td>${r[1]}</td><td class="mono">${i === 0 ? "p < " + a[1][0] : i === a.length - 1 ? "p ≥ " + r[0] : r[0] + " ≤ p < " + a[i + 1][0]}</td></tr>`).join("");
+  const nTests = m.n_tests || 768;
+  const size = m.size.map((r, i, a) => `<tr><td>${r[1]}</td><td class="mono">${i === a.length - 1 ? "≥ " + r[0] : r[0] + " – " + a[i + 1][0]}</td></tr>`).join("");
+  app.innerHTML = `<div class="wrap doc">
+  <nav aria-label="On this page"><a href="#methods" data-to="m-data">Data</a><a href="#methods" data-to="m-model">The model</a><a href="#methods" data-to="m-pct">Extremes</a><a href="#methods" data-to="m-labels">Labels</a><a href="#methods" data-to="m-fc">Outlook</a><a href="#methods" data-to="m-limits">Limits</a><a href="#methods" data-to="m-files">Data files</a></nav>
+  <article>
+    <h1>Data &amp; Methods</h1>
+    <p>Each number in this analysis comes from one regression per city, season and variable, fitted to ${m.fit_years[1] - m.fit_years[0] + 1} seasons (${m.fit_years[0]}–${m.fit_years[1]}). The same model gives the long-term trend, El Niño's effect, how confident we are in it, how large it is, and the ${m.forecast_year} outlook.</p>
+
+    <h2 id="m-data">Data</h2>
+    <p><b>Weather.</b> ERA5 reanalysis from the Copernicus Climate Change Service, hourly at one grid point per city (about 25 km), combined into local days: daily mean temperature, daily rainfall total and daily mean relative humidity.</p>
+    <p><b>Seasons.</b> Dec–Feb (December counted with the following January and February) and Mar–May. A season is used only if at least 97% of its days exist.</p>
+    <p><b>El Niño index.</b> NOAA CPC's Relative Oceanic Niño Index (RONI): Niño 3.4 sea-surface temperature with the tropical-mean warming removed. Each season uses the Sep–Nov value of the year before. Sep–Nov is the last complete season before Dec–Feb and CPC publishes it in early December; for Mar–May the same value stands six months ahead, and the Dec–Feb value will replace it when it is published in March.</p>
+    <p><b>Variables.</b> Season mean temperature; season rainfall total; share of days with at least ${m.wet_day_mm} mm of rain; season mean relative humidity.</p>
+
+    <h2 id="m-model">The model</h2>
+<pre>y(t) = a + b · RONI(Sep–Nov, t−1) + c · (t − t̄) + error</pre>
+    <ul>
+      <li><b>Trend</b> is <code>10·c</code>, the change per decade with El Niño held fixed.</li>
+      <li><b>El Niño effect</b> is <code>b</code>, the change per +1 °C of fall RONI.</li>
+      <li><b>Fraction explained</b> is the share of year-to-year variance, after the trend, that El Niño accounts for (partial R²).</li>
+      <li><b>Intrinsic variability</b> is the standard deviation of what remains: a normal year-to-year swing.</li>
+      <li><b>FDR.</b> We test ${nTests} El Niño effects (96 cities × 2 seasons × 4 variables), so a few would pass p &lt; 0.05 by chance. Effects marked FDR survive the Benjamini–Hochberg false-discovery-rate correction at 5%. In practice that bar sits near p = 0.01.</li>
+    </ul>
+
+    <h2 id="m-pct">Extremes: the coolest, typical and hottest days</h2>
+    <p>The same model is fitted to every day of the season with quantile regression for the 5th, 50th and 95th percentiles, so we can ask whether El Niño moves the cold tail, the middle and the hot tail by different amounts. Rainfall uses wet days (≥ ${m.wet_day_mm} mm) only. Uncertainty comes from a year-block bootstrap: whole seasons are resampled, the same draws for all three percentiles, which gives a valid test for whether the two tails move differently.${m.quantile_capped_share != null ? ` Each cell uses ${m.quantile_bootstrap_reps} replicates; ${(m.quantile_capped_share * 100).toFixed(1)}% of all fits reached the solver's iteration cap of 1,000 and are kept, and the table records the count per cell.` : ""}</p>
+
+    <h2 id="m-labels">Confidence and size labels</h2>
+    <p><b>Confidence</b> says how sure we are that El Niño has an effect at all (from the p-value). <b>Size</b> says how big this year's effect is compared with a normal year-to-year swing (effect at this year's RONI ÷ intrinsic variability). The two are reported separately.</p>
+    <div class="tbl"><table><thead><tr><th>Confidence</th><th>p-value</th></tr></thead><tbody>${conf}</tbody></table></div>
+    <div class="tbl" style="margin-top:16px"><table><thead><tr><th>Size</th><th>Effect ÷ normal swing</th></tr></thead><tbody>${size}</tbody></table></div>
+    <p>"Without El Niño, about once every N years" turns the size ratio into a return period: how often a season this far from the trend would happen by chance alone, assuming normally distributed swings.</p>
+    ${m.strong_is_fdr ? `<p>Of the ${nTests} tests, about 400 behave as if there were no effect at all (twice the number with p ≥ 0.5). Spread over the tiers, that makes roughly 2% of Strong labels, a fifth of Clear labels and a third of Suggestive labels chance findings. The city descriptions call an effect "well-established" only when it is Strong.</p>` : ""}
+
+    <h2 id="m-fc">The ${m.forecast_year} outlook</h2>
+<pre>expected = a + c · (${m.forecast_year} − t̄) + b̃ · RONI(Sep–Nov ${m.forecast_year - 1})
+spread   = √( residual² + parameter uncertainty + b̃² · RONI uncertainty² )${m.shrink ? `
+b̃        = b · τ² / (τ² + se²)` : ""}</pre>
+    ${m.shrink ? `<p>b̃ is the fitted El Niño effect shrunk toward zero by an empirical-Bayes factor. τ² is the spread of true effects across the 96 cities for that season and variable, estimated as the variance of the fitted effects minus their mean squared standard error; se is the city's own standard error. A Strong effect keeps nearly all of its value. An effect indistinguishable from zero keeps a sixth or less, so it no longer tilts the outlook. The size label, the return period and the city descriptions use b̃; the confidence label and the El Niño effect chip report the unshrunk fit.</p>` : ""}
+    <p>The chances of below-, near- and above-normal are the shares of a normal distribution with that center and spread that fall below, between and above the 1991–2020 thirds. The outlook includes the trend, so warming cities lean warm even without El Niño. Chances above 95% are written as "very likely (>95%)", because a bell curve overstates certainty far into its tails.${m.dry_season_mm ? ` Rainfall and rainy-day outlooks are not ranked where the 1991–2020 normal is under ${m.dry_season_mm} mm.` : ""}</p>
+    <p>${m.son_2026_roni_source ? esc(m.son_2026_roni_source) : m.son_2026_estimated ? `Sep–Nov ${m.forecast_year - 1} RONI is not yet observed. The outlook uses an estimate of +${m.son_2026_roni.toFixed(1)} ± ${m.son_2026_roni_sd} °C and will be updated when CPC publishes the value in early December.` : `Sep–Nov ${m.forecast_year - 1} RONI: +${m.son_2026_roni.toFixed(2)} °C.`}${m.roni_record_max ? ` The largest Sep–Nov RONI in the fit is +${m.roni_record_max.toFixed(2)} °C (1997); a season above it puts the outlook beyond the fitted range, where the straight-line assumption is untested.` : ""}</p>
+
+    <h2 id="m-limits">Limits</h2>
+    <ul>
+      <li>One grid point stands for each city, which smooths coastal and urban effects. ERA5 rainfall is model-generated.</li>
+      <li>Long-term trends that looked unusual were checked against the nearest weather station. Where the station did not confirm them (humidity in Ahmedabad and Dhaka, winter rain in Vancouver), the city descriptions do not quote the ERA5 trend; where no usable station record exists (dry-season rain in Freetown, Lagos and Accra; autumn temperature in Santiago), the descriptions say so. The charts still show ERA5.</li>
+      <li>El Niño's effect is assumed to be a straight line in RONI, and warming a straight line in time, over ${m.fit_years[0]}–${m.fit_years[1]}.</li>
+      <li>El Niño is the only climate driver in the model; the Indian Ocean Dipole and Atlantic patterns are not included.</li>
+      <li>This measures the weather hazard only, not vulnerability (population, housing, health).</li>
+    </ul>
+
+    <h2 id="m-files">Data files</h2>
+    <p>The tables are in <code>data/processed/</code> (<code>linear_results.csv</code>, <code>quantile_results.csv</code>, <code>city_facts.json</code>) and <code>python code/run.py</code> rebuilds them from the daily ERA5 panel; the README gives the run order and the validation commands. The files this site reads are in <code>site/data/</code>: <code>cities.json</code>, <code>meta.json</code> and one file per city in <code>data/city/</code>. ${m.paragraph_source ? `City descriptions are generated by <code>code/05_write_paragraphs.py</code> into <code>${esc(m.paragraph_source)}</code>.` : ""}</p>
+  </article></div>`;
+  app.querySelectorAll("nav a[data-to]").forEach(a => a.onclick = e => { e.preventDefault(); document.getElementById(a.dataset.to).scrollIntoView({ behavior: "smooth" }); });
+  window.scrollTo(0, 0);
+}
+
+boot();
+})();
+</script>
+</body>
+</html>

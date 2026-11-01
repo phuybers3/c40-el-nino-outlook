@@ -1,0 +1,62 @@
+{
+ "son_2026_roni": 2.2,
+ "son_2026_roni_sd": 0.25,
+ "son_2026_estimated": true,
+ "forecast_year": 2027,
+ "fit_years": [
+  1951,
+  2025
+ ],
+ "baseline": [
+  1991,
+  2020
+ ],
+ "typical_el_nino": 1.5,
+ "wet_day_mm": 1.0,
+ "confidence": [
+  [
+   0.0,
+   "Strong"
+  ],
+  [
+   0.01,
+   "Clear"
+  ],
+  [
+   0.05,
+   "Modest"
+  ],
+  [
+   0.1,
+   "Detectable"
+  ],
+  [
+   0.2,
+   "Weak"
+  ],
+  [
+   0.5,
+   "No identifiable effect"
+  ]
+ ],
+ "size": [
+  [
+   0.0,
+   "Negligible"
+  ],
+  [
+   0.25,
+   "Noticeable"
+  ],
+  [
+   0.5,
+   "Substantial"
+  ],
+  [
+   1.0,
+   "Dominant"
+  ]
+ ],
+ "paragraph_source": "city_paragraphs_DRAFT.md",
+ "exported": "2026-10-31"
+}

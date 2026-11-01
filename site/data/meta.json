@@ -1,0 +1,63 @@
+{
+ "son_2026_roni": 2.53,
+ "son_2026_roni_sd": 0.25,
+ "son_2026_estimated": true,
+ "son_2026_roni_source": "Sep–Nov 2026 RONI is not yet published. The outlook uses CPC's central estimate, +2.53 ± 0.25 °C: CPC's ENSO discussion of 2026-10-08 gives a 54% chance of a Sep–Nov RONI of +2.5 °C or more, which with a spread of 0.25 °C puts the middle of its distribution at +2.53 °C. The estimate is refreshed with each CPC discussion and replaced by the observed value in early December.",
+ "forecast_year": 2027,
+ "fit_years": [
+  1951,
+  2025
+ ],
+ "baseline": [
+  1991,
+  2020
+ ],
+ "typical_el_nino": 1.5,
+ "wet_day_mm": 1.0,
+ "confidence": [
+  [
+   0.0,
+   "Strong"
+  ],
+  [
+   0.0,
+   "Clear"
+  ],
+  [
+   0.05,
+   "Suggestive"
+  ],
+  [
+   0.1,
+   "No identifiable effect"
+  ]
+ ],
+ "strong_is_fdr": true,
+ "shrink": true,
+ "size": [
+  [
+   0.0,
+   "Negligible"
+  ],
+  [
+   0.25,
+   "Noticeable"
+  ],
+  [
+   0.5,
+   "Substantial"
+  ],
+  [
+   1.0,
+   "Dominant"
+  ]
+ ],
+ "dry_season_mm": 25.0,
+ "n_tests": 768,
+ "roni_record_max": 2.22,
+ "rules": "new",
+ "quantile_bootstrap_reps": 100,
+ "quantile_capped_share": 0.011175720746677843,
+ "paragraph_source": "docs/city_paragraphs.md",
+ "exported": "2026-10-31"
+}

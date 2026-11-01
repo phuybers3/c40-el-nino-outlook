@@ -1,0 +1,12 @@
+{
+ "source": "NOAA Climate Prediction Center, ENSO Diagnostic Discussion",
+ "url": "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml",
+ "issued": "2026-10-08",
+ "next_issue": "2026-11-12",
+ "fetched": "2026-10-31",
+ "index": "RONI",
+ "threshold": 2.5,
+ "chance_at_or_above_threshold": {"SON": 0.54, "OND": 0.83, "NDJ": 0.70},
+ "quote": "Chances remain high for a historic event that would exceed the strength of previous El Niño events dating back to 1950 (+2.5°C or more for a 3-month RONI value): the chance is 54% for September-November, 83% for October-December, and 70% for November-January.",
+ "latest_observed": {"Nino-3.4 monthly": 2.1, "RONI JAS 2026": 1.69}
+}

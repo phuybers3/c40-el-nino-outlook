@@ -1,0 +1,6 @@
+data/raw/
+data/processed/daily_panel.parquet
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
+*.zip
