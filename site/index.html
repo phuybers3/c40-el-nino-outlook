@@ -518,8 +518,27 @@ function cityBody(c, D, sd) {
     const x = sd.variables[v.key]; if (!x) return "";
     if (rain && rain.dry_season && (v.key === "precipitation" || v.key === "wet_day_share")) {
       // Too little rain to rank: the normal is under meta.dry_season_mm, so thirds of a few millimetres mean nothing.
-      return v.key === "precipitation" ? `<div class="ol-row"><div class="ol-top"><b>Rainfall and rainy days</b><span>too dry to call</span></div>
-        <p>About ${fmt(rain.normal_1991_2020, 0)} mm falls in a normal ${SEASON[S.season].short}; the outlook does not rank totals this small.</p></div>` : "";
+      if (v.key !== "precipitation") return "";
+      // Totals this small swing more than their normal from year to year, so neither a ranking in
+      // thirds nor a percent change means anything; the count of rainy days does.
+      const w = sd.variables.wet_day_share, days = S.season === "DJF" ? 90 : 92;
+      const nd = w ? w.normal_1991_2020 * days / 100 : null;
+      const ed = w ? Math.max(0, (w.normal_1991_2020 + w.expected_anomaly_2027) * days / 100) : null;
+      const dayWord = n => `${Math.round(n)} rainy day${Math.round(n) === 1 ? "" : "s"}`;
+      const normTxt = `about ${fmt(rain.normal_1991_2020, 0)} mm${nd != null ? (nd < 0.5 ? " on almost no days" : ` on ${Math.round(nd)} day${Math.round(nd) === 1 ? "" : "s"}`) : ""} in a normal season`;
+      const estab = CONF_TIER[rain.confidence] ? rain : (w && CONF_TIER[w.confidence] ? w : null);
+      let s;
+      if (estab) {
+        const drier = estab.effect_this_season < 0;
+        s = `After El Niño this season has run ${drier ? "drier" : "wetter"} (${estab.confidence === "Strong" ? "strong" : "clear"} evidence)`;
+        if (ed != null) s += drier && ed < 0.5 ? ", with hardly any rainy days expected" : (Math.round(ed) !== Math.round(nd) ? `, with about ${dayWord(ed)} expected instead of ${Math.round(nd)}` : "");
+        s += ".";
+      } else if (rain.confidence === "Suggestive" || (w && w.confidence === "Suggestive")) {
+        const e = rain.confidence === "Suggestive" ? rain.effect_this_season : w.effect_this_season;
+        s = `A slight tilt toward ${e < 0 ? "drier" : "wetter"}, on thin evidence.`;
+      } else s = "No clear El Niño effect.";
+      return `<div class="ol-row"><div class="ol-top"><b>Rainfall and rainy days</b><span>${normTxt}</span></div>
+        <p>Too little rain to rank in thirds. ${s}</p></div>`;
     }
     const lo = x.p_below, mid = x.p_near, hi = x.p_above;
     const loC = v.lo === "temperature" ? "lo-temperature" : "lo-wet", hiC = v.lo === "temperature" ? "hi-temperature" : "hi-wet";

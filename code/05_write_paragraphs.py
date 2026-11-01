@@ -462,6 +462,48 @@ def is_dry(c):
     return p["normal_1991_2020"] < c.R["dry_mm"]
 
 
+SEASON_DAYS = {"DJF": 90, "MAM": 92}
+
+
+def days_text(d):
+    """Rainy days as words: 'on 4 days', 'on 1 day', 'on almost no days'."""
+    n = int(round(d))
+    if d < 0.5:
+        return "on almost no days"
+    return "on %d day%s" % (n, "" if n == 1 else "s")
+
+
+def dry_sentence(c, opening):
+    """Dry seasons under the new rules: the normal amount in millimetres and rainy days, then El
+    Niño's direction and the rainy days it leaves, with no percentage and no odds. Totals this
+    small have year-to-year swings larger than the normal, so a percent change or a ranking in
+    thirds would say nothing; the count of rainy days is well behaved and is what a reader can use."""
+    p, w = c.v["precipitation"], c.v.get("wet_day_share")
+    days = SEASON_DAYS[c.season]
+    nd = w["normal_1991_2020"] * days / 100 if w else None
+    if nd is not None:
+        opening = opening.replace(" mm in a normal season)", " mm, %s, in a normal season)" % days_text(nd))
+    lab_p, lab_w = c.label("precipitation"), (c.label("wet_day_share") if w else None)
+    strong = ("Strong", "Clear")
+    if lab_p in strong or lab_w in strong:
+        eff = p["effect_this_season"] if lab_p in strong else w["effect_this_season"]
+        drier = eff < 0
+        tail = ""
+        if w:
+            exp_days = max(0.0, (w["normal_1991_2020"] + w["expected_anomaly_2027"]) * days / 100)
+            n_exp, n_norm = int(round(exp_days)), int(round(nd))
+            if drier and exp_days < 0.5:
+                tail = ", with hardly any rainy days"
+            elif n_exp != n_norm:
+                tail = ", with about %d rainy day%s instead of %d" % (n_exp, "" if n_exp == 1 else "s", n_norm)
+        return "%s; after El Niño conditions in the preceding %s, %s has tended to be %s%s." % (
+            opening, c.lead, c.S, "drier still" if drier else "a little wetter", tail)
+    if lab_p == "Suggestive" or lab_w == "Suggestive":
+        eff = p["effect_this_season"] if lab_p == "Suggestive" else w["effect_this_season"]
+        return "%s; El Niño may bring slightly %s rain, though the evidence is thin." % (opening, "less" if eff < 0 else "more")
+    return "%s, with no clear El Niño link." % opening
+
+
 def effect_sentence(c, var, target, extras=""):
     R, lab = c.R, c.label(var)
     tmpl = R["effect_sentence_by_label"].get(lab, R["effect_sentence"])
@@ -482,7 +524,7 @@ def rain_sentence(c):
         trend_txt = "Very little rain falls in %s in %s (%s mm in a normal season)" % (
             c.S, c.city, ("about %d" % n) if n else (R["dry_under"] % 5))
         if R["dry_silences_effect"]:
-            return trend_txt + ".", False
+            return dry_sentence(c, trend_txt), False
     else:
         chk = c.check("precipitation")
         if chk:
