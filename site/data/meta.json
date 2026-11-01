@@ -33,7 +33,7 @@
   ]
  ],
  "strong_is_fdr": true,
- "shrink": true,
+ "shrink": false,
  "size": [
   [
    0.0,

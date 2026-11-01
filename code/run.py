@@ -84,6 +84,7 @@ def main() -> None:
     ap.add_argument("--roni-source", default="")
     ap.add_argument("--roni-file", default=ROOT / "data/raw/RONI.ascii.txt")
     ap.add_argument("--roni-cpc", help="CPC discussion file: use CPC's central estimate for the Sep-Nov RONI (see cpc_roni.py)")
+    ap.add_argument("--no-shrink", action="store_true", help="use the fitted El Niño effects at face value (no empirical-Bayes shrinkage)")
     ap.add_argument("--skip-quantiles", action="store_true", help="reuse data/processed/quantile_results.csv")
     ap.add_argument("--reps", type=int, default=100)
     ap.add_argument("--workers", type=int)
@@ -111,7 +112,7 @@ def main() -> None:
         run("03_fit_quantiles.py", "--reps", args.reps, "--forecast-year", args.forecast_year, *extra)
     run("04_build_facts.py", "--rules", args.rules, "--forecast-year", args.forecast_year,
         "--roni", roni, "--roni-sd", roni_sd, "--roni-source", source,
-        *(["--roni-estimated"] if estimated else ["--roni-observed"]))
+        *(["--roni-estimated"] if estimated else ["--roni-observed"]), *(["--no-shrink"] if args.no_shrink else []))
     run("05_write_paragraphs.py", "--facts", ROOT / "data/processed/city_facts.json", "--rules", args.rules,
         "--out", ROOT / "docs/city_paragraphs.md", "--json-out", ROOT / "data/processed/city_paragraphs.json")
     run("06_export_site.py", "--exported", args.exported, "--paragraph-source", "docs/city_paragraphs.md")

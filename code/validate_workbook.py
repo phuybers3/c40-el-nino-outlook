@@ -425,6 +425,10 @@ def main() -> int:
             problems.append(f"Settings!{addr} = {wb['Settings'][addr].value}, facts_meta {key} = {meta[key]}")
 
     def check(sheet, k, col, expected, label):
+        # With shrinkage off the facts omit these three fields; the workbook then holds a factor
+        # of 1 and the unshrunk effect, which is what the switch means, so there is nothing to compare.
+        if expected is None and label in ("shrink_factor", "enso_effect_shrunk_per_degC", "effect_this_season_raw"):
+            return
         try:
             got = ev.cell(sheet, col, k)
         except XLError as e:

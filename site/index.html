@@ -816,8 +816,8 @@ function renderMethods() {
     ${m.strong_is_fdr ? `<p>Of the ${nTests} tests, about 400 behave as if there were no effect at all (twice the number with p ≥ 0.5). Spread over the tiers, that makes roughly 2% of Strong labels, a fifth of Clear labels and a third of Suggestive labels chance findings. The city descriptions call an effect "well-established" only when it is Strong.</p>` : ""}
 
     <h2 id="m-fc">The ${m.forecast_year} outlook</h2>
-<pre>expected = a + c · (${m.forecast_year} − t̄) + b̃ · RONI(Sep–Nov ${m.forecast_year - 1})
-spread   = √( residual² + parameter uncertainty + b̃² · RONI uncertainty² )${m.shrink ? `
+<pre>expected = a + c · (${m.forecast_year} − t̄) + ${m.shrink ? "b̃" : "b"} · RONI(Sep–Nov ${m.forecast_year - 1})
+spread   = √( residual² + parameter uncertainty + ${m.shrink ? "b̃" : "b"}² · RONI uncertainty² )${m.shrink ? `
 b̃        = b · τ² / (τ² + se²)` : ""}</pre>
     ${m.shrink ? `<p>b̃ is the fitted El Niño effect shrunk toward zero by an empirical-Bayes factor. τ² is the spread of true effects across the 96 cities for that season and variable, estimated as the variance of the fitted effects minus their mean squared standard error; se is the city's own standard error. A Strong effect keeps nearly all of its value. An effect indistinguishable from zero keeps a sixth or less, so it no longer tilts the outlook. The size label, the return period and the city descriptions use b̃; the confidence label and the El Niño effect chip report the unshrunk fit.</p>` : ""}
     <p>The chances of below-, near- and above-normal are the shares of a normal distribution with that center and spread that fall below, between and above the 1991–2020 thirds. The outlook includes the trend, so warming cities lean warm even without El Niño. Chances above 95% are written as "very likely (>95%)", because a bell curve overstates certainty far into its tails.${m.dry_season_mm ? ` Rainfall and rainy-day outlooks are not ranked where the 1991–2020 normal is under ${m.dry_season_mm} mm.` : ""}</p>
